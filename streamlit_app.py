@@ -118,7 +118,7 @@ def generate_pdf(row: dict, filename: str):
     y -= 30
 
     # --- Questions Q1–Q6 ---
-    for i in range(1, 7):
+    for i in range(1, 5):
         if i ==1:
             q_text = "How would you rate the venue- 'Pinnacle' for Holi Party?"
         elif i==2: 
@@ -415,6 +415,7 @@ elif st.session_state.mode == "admin":
     else:
 
         st.sidebar.error("Invalid credentials.")
+
 
 
 
