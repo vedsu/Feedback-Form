@@ -232,7 +232,7 @@ def generate_feedback_pdf(dataframe, filename="all_feedback.pdf"):
 if st.session_state.mode == "employee":
     st.subheader("Employee Feedback")
     with st.form("feedback_form", clear_on_submit=False):
-        subject = st.text_input("Subject:", "Holi Celebration Feedback")
+        subject = st.text_input("Subject:", "Holi Celebration 2026 Feedback")
 
         col1, col2 = st.columns(2)
         with col1:
@@ -415,6 +415,7 @@ elif st.session_state.mode == "admin":
     else:
 
         st.sidebar.error("Invalid credentials.")
+
 
 
 
