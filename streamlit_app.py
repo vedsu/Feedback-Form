@@ -12,7 +12,7 @@ from textwrap import wrap
 # ------------ Page setup ------------
 st.set_page_config(page_title="Feedback Form", page_icon="📝", layout="centered")
 st.title("Feedback Form for Employee")
-st.caption("A simple feedback form / rating page inspired by the Diwali Party!")
+st.caption("A simple feedback form / rating page inspired by the HOLI  Party!")
 
 # ------------ Helpers ------------
 DATA_PATH = Path("feedback.csv")
@@ -50,7 +50,7 @@ mongo_uri = "mongodb+srv://Vedsu:CVxB6F2N700cQ0qu@cluster0.thbmwqi.mongodb.net/"
 
 client = MongoClient(mongo_uri)
 DB_NAME = "misc"
-COLL_NAME = "feedback_diwali2025"
+COLL_NAME = "feedback_holi2026"
 db = client[DB_NAME]
 coll = db[COLL_NAME]
 # ---------------- Helpers ----------------
@@ -119,17 +119,17 @@ def generate_pdf(row: dict, filename: str):
     # --- Questions Q1–Q6 ---
     for i in range(1, 7):
         if i ==1:
-            q_text = "How would you rate the venue of Diwali Party?"
+            q_text = "How would you rate the venue- 'Pinnacle' for Holi Party?"
         elif i==2: 
             q_text = "How would you rate enjoyment in pool?"
         elif i==3:
-            q_text = "How would you rate decoration and Puja on Diwali at Office?"
+            q_text = "How would you rate Holi Celebration and Playing Colours at Office?"
         elif i==4:
-            q_text = "How would you rate the food on Diwali Party?"
-        elif i==5:
-            q_text = "How would you rate the initiative on Pick up and drop facility?"
-        elif i==6:
-            q_text = "How would you rate the Diwali Gifts?"
+            q_text = "How would you rate the food on Holi Party?"
+        # elif i==5:
+        #     q_text = "How would you rate the initiative on Pick up and drop facility?"
+        # elif i==6:
+        #     q_text = "How would you rate the Holi Gifts?"
         
         
 
@@ -231,7 +231,7 @@ def generate_feedback_pdf(dataframe, filename="all_feedback.pdf"):
 if st.session_state.mode == "employee":
     st.subheader("Employee Feedback")
     with st.form("feedback_form", clear_on_submit=False):
-        subject = st.text_input("Subject:", "Diwali Celebration Feedback")
+        subject = st.text_input("Subject:", "Holi Celebration Feedback")
 
         col1, col2 = st.columns(2)
         with col1:
@@ -241,7 +241,7 @@ if st.session_state.mode == "employee":
 
         st.divider()
 
-        st.subheader("Q1. How would you rate the venue of Diwali Party?")
+        st.subheader("Q1. How would you rate the venue- 'Pinnacle' for Holi Party?")
         q1 = st.radio("Select one:", RATING_OPTIONS, format_func=lambda x: x[1], horizontal=True, index=None, key="q1")
         q1_comment = st.text_area("Additional comments:", key="q1c")
 
@@ -249,22 +249,22 @@ if st.session_state.mode == "employee":
         q2 = st.radio("Select one:", RATING_OPTIONS, format_func=lambda x: x[1], horizontal=True, index=None, key="q2")
         q2_comment = st.text_area("Additional comments:", key="q2c")
 
-        st.subheader("Q3. How would you rate decoration and Puja on Diwali at Office?")
+        st.subheader("Q3. How would you rate Holi Celebration and Playing Colours at Office?")
         q3 = st.radio("Select one:", RATING_OPTIONS, format_func=lambda x: x[1], horizontal=True, index=None, key="q3")
         q3_comment = st.text_area("Additional comments:", key="q3c")
 
-        st.subheader("Q4. How would you rate the food on Diwali Party?")
+        st.subheader("Q4. How would you rate the food on Holi Party?")
         q4 = st.radio("Select one:", RATING_OPTIONS, format_func=lambda x: x[1], horizontal=True, index=None, key="q4")
         q4_comment = st.text_area("Additional comments:", key="q4c")
 
         
-        st.subheader("Q5. How would you rate the initiative on Pick up and drop facility?")
-        q5 = st.radio("Select one:", RATING_OPTIONS, format_func=lambda x: x[1], horizontal=True, index=None, key="q5")
-        q5_comment = st.text_area("Additional comments:", key="q5c")
+        # st.subheader("Q5. How would you rate the initiative on Pick up and drop facility?")
+        # q5 = st.radio("Select one:", RATING_OPTIONS, format_func=lambda x: x[1], horizontal=True, index=None, key="q5")
+        # q5_comment = st.text_area("Additional comments:", key="q5c")
 
-        st.subheader("Q6. How would you rate the Diwali Gifts?")
-        q6 = st.radio("Select one:", RATING_OPTIONS, format_func=lambda x: x[1], horizontal=True, index=None, key="q6")
-        q6_comment = st.text_area("Additional comments:", key="q6c")
+        # st.subheader("Q6. How would you rate the Holi Gifts?")
+        # q6 = st.radio("Select one:", RATING_OPTIONS, format_func=lambda x: x[1], horizontal=True, index=None, key="q6")
+        # q6_comment = st.text_area("Additional comments:", key="q6c")
         
         st.divider()
 
@@ -279,7 +279,8 @@ if st.session_state.mode == "employee":
         def to_int(opt):
             return int(opt[0]) if opt else None
 
-        q1v, q2v, q3v, q4v, q5v, q6v = map(to_int, (q1, q2, q3, q4, q5, q6))
+        # q1v, q2v, q3v, q4v, q5v, q6v = map(to_int, (q1, q2, q3, q4, q5, q6))
+        q1v, q2v, q3v, q4v = map(to_int, (q1, q2, q3, q4))
 
         errs = validate(subject, name, email)
         if errs:
@@ -300,10 +301,10 @@ if st.session_state.mode == "employee":
             "q3_comment": (q3_comment or "").strip(),
             "q4": q4v,
             "q4_comment": (q4_comment or "").strip(),
-            "q5": q5v,
-            "q5_comment": (q5_comment or "").strip(),
-            "q6": q6v,
-            "q6_comment": (q6_comment or "").strip(),
+            # "q5": q5v,
+            # "q5_comment": (q5_comment or "").strip(),
+            # "q6": q6v,
+            # "q6_comment": (q6_comment or "").strip(),
             "overall": int(overall),
         }
 
@@ -391,10 +392,10 @@ elif st.session_state.mode == "admin":
                 avg_ratings = {
                     "Venue": df["q1"].mean(),
                     "Pool Enjoyment": df["q2"].mean(),
-                    "Decoration & Puja": df["q3"].mean(),
+                    "Celebration & Colour": df["q3"].mean(),
                     "Food": df["q4"].mean(),
-                    "Pickup & Drop": df["q5"].mean(),
-                    "Gifts": df["q6"].mean(),
+                    # "Pickup & Drop": df["q5"].mean(),
+                    # "Gifts": df["q6"].mean(),
                     "Overall": df["overall"].mean(),
                 }
                 avg_df = pd.DataFrame.from_dict(avg_ratings, orient="index", columns=["Average Rating"])
@@ -410,4 +411,5 @@ elif st.session_state.mode == "admin":
         else:
             st.info("No feedback found for the current filters.")
     else:
+
         st.sidebar.error("Invalid credentials.")
