@@ -269,7 +269,7 @@ if st.session_state.mode == "employee":
         
         st.divider()
 
-        overall = st.slider("Overall Rating:", min_value=1, max_value=5, value=3)
+        overall = st.slider("Overall Rating:", min_value=1, max_value=5, value=1)
         # st.markdown(f"**Your stars:** {starbar(overall)}")
         
 
@@ -415,6 +415,7 @@ elif st.session_state.mode == "admin":
     else:
 
         st.sidebar.error("Invalid credentials.")
+
 
 
 
