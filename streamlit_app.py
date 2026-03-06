@@ -267,9 +267,23 @@ if st.session_state.mode == "employee":
         # q6_comment = st.text_area("Additional comments:", key="q6c")
         
         st.divider()
+        if "overall_rating" not in st.session_state:
+            st.session_state.overall_rating = 1
+        def update_rating():
+            st.session_state.overall_rating = st.session_state.slider_rating
 
-        overall = st.slider("Overall Rating:", min_value=1, max_value=5, value=3)
-        st.markdown(f"**Your stars:** {starbar(overall)}")
+        # overall = st.slider("Overall Rating:", min_value=1, max_value=5, value=3)
+        
+        # st.markdown(f"**Your stars:** {starbar(overall)}")
+        overall = st.slider(
+            "Overall Rating:",
+            min_value=1,
+            max_value=5,
+            value=st.session_state.overall_rating,
+            key="slider_rating",
+            on_change=update_rating
+        )
+        st.markdown(f"**Your stars:** {starbar(st.session_state.overall_rating)}")
 
         submitted = st.form_submit_button("Submit")
 
@@ -413,3 +427,4 @@ elif st.session_state.mode == "admin":
     else:
 
         st.sidebar.error("Invalid credentials.")
+
