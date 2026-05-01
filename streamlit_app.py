@@ -36,10 +36,10 @@ RATING_OPTIONS = [
 QUESTIONS = {
     1: "How would you rate the quality and quantity of furniture and office utilities such as tables, chairs, ACs, fans, lights, etc.?",
     2: "How would you rate the interior design, ventilation, workspace layout and overall comfort of the office?",
-    3: "How would you rate the pantry and conference hall facilities?",
+    3: "How would you rate the conference hall facilities, including pantry?",
     4: "How would you rate the hygiene, cleanliness and quality of washrooms?",
     5: "How would you rate the overall ambience of the office?",
-    6: "How would you rate the admin team's responsibility, responsiveness and support?",
+    6: "How would you rate the admin's responsibility, responsiveness and support?",
 }
 
 SUMMARY_LABELS = {
