@@ -72,6 +72,9 @@ st.sidebar.write(":bulb: Use the buttons above to switch modes.")
 
 
 # ------------ MongoDB ------------
+# Recommended priority: Streamlit secrets -> environment variable -> fallback.
+# Add this in .streamlit/secrets.toml:
+# mongo_uri = "mongodb+srv://username:password@cluster-url/"
 try:
     mongo_uri = st.secrets["mongo_uri"]
 except Exception:
@@ -92,7 +95,7 @@ def starbar(value: int, total: int = 5) -> str:
     return "★" * value + "☆" * (total - value)
 
 
-def validate(subject: str, name: str, email: str, ratings: list) -> list[str]:
+def validate(subject: str, name: str, email: str, ratings: list[int | None]) -> list[str]:
     errors = []
 
     if not subject.strip():
@@ -175,14 +178,12 @@ def generate_pdf(row: dict, filename: str):
 
         c.setFont("Helvetica", 12)
         y = check_page_space(y)
-
         rating = row.get(f"q{i}", "")
         c.drawString(70, y, f"Rating: {rating} ({starbar(rating) if rating else ''})")
         y -= 20
 
         comment = row.get(f"q{i}_comment", "")
         y = check_page_space(y)
-
         if comment:
             y = draw_wrapped_text(c, f"Comment: {comment}", 70, y, width_chars=80, line_gap=14)
         else:
@@ -191,10 +192,15 @@ def generate_pdf(row: dict, filename: str):
 
         y -= 12
 
-    y = check_page_space(y)
-    c.setLineWidth(1)
-    c.line(40, y, width - 40, y)
-    y -= 25
+    # --- Start Final Overall Rating and Additional Comments on a new page ---
+    c.showPage()
+    c.setFont("Helvetica", 12)
+    c.rect(margin, margin, width - 2 * margin, height - 2 * margin)
+    y = height - 50
+
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(50, y, "Final Feedback Summary")
+    y -= 35
 
     c.setFont("Helvetica-Bold", 12)
     c.drawString(50, y, "Final Overall Rating:")
@@ -273,33 +279,27 @@ def generate_feedback_pdf(dataframe: pd.DataFrame, filename: str = "all_feedback
 
         for i, q_text in QUESTIONS.items():
             y = check_page(y)
-
             c.setFont("Helvetica-Bold", 11)
             y = draw_wrapped_text(c, f"Q{i}. {q_text}", 60, y, width_chars=75, line_gap=13)
 
             c.setFont("Helvetica", 11)
             y = check_page(y)
-
             c.drawString(70, y, f"Rating: {row.get(f'q{i}', '')}")
             y -= 14
 
             comment = str(row.get(f"q{i}_comment", "") or "")
-
             if comment:
                 y = check_page(y)
                 y = draw_wrapped_text(c, f"Comment: {comment}", 70, y, width_chars=80, line_gap=12)
-
             y -= 8
 
         additional_comment = str(row.get("additional_comment", "") or "")
-
         y = check_page(y)
         c.setFont("Helvetica-Bold", 11)
         c.drawString(60, y, "Additional Comments:")
         y -= 14
 
         c.setFont("Helvetica", 11)
-
         if additional_comment:
             y = draw_wrapped_text(c, additional_comment, 70, y, width_chars=80, line_gap=12)
         else:
@@ -308,7 +308,6 @@ def generate_feedback_pdf(dataframe: pd.DataFrame, filename: str = "all_feedback
 
         y -= 8
         y = check_page(y)
-
         c.setLineWidth(1)
         c.line(40, y, width - 40, y)
         y -= 25
@@ -324,10 +323,8 @@ if st.session_state.mode == "employee":
         subject = st.text_input("Subject:", "Admin & Office Facilities Feedback 2026")
 
         col1, col2 = st.columns(2)
-
         with col1:
             name = st.text_input("Name:")
-
         with col2:
             email = st.text_input("Email:")
 
@@ -338,7 +335,6 @@ if st.session_state.mode == "employee":
 
         for i, question in QUESTIONS.items():
             st.subheader(f"Q{i}. {question}")
-
             ratings[i] = st.radio(
                 "Select one:",
                 RATING_OPTIONS,
@@ -347,7 +343,6 @@ if st.session_state.mode == "employee":
                 index=None,
                 key=f"q{i}",
             )
-
             comments[i] = st.text_area("Additional comments:", key=f"q{i}c")
 
         st.divider()
@@ -364,7 +359,6 @@ if st.session_state.mode == "employee":
         rating_values = [to_int(ratings[i]) for i in QUESTIONS]
 
         errs = validate(subject, name, email, rating_values)
-
         if errs:
             for e in errs:
                 st.error(e)
@@ -409,7 +403,6 @@ elif st.session_state.mode == "admin":
     st.subheader("Admin Login / Review")
 
     admin_user = "admin"
-
     try:
         admin_pass = st.secrets["admin_password"]
     except Exception:
@@ -439,7 +432,6 @@ elif st.session_state.mode == "admin":
                 st.dataframe(df, use_container_width=True)
 
                 csv_data = df.to_csv(index=False).encode("utf-8")
-
                 st.download_button(
                     "Download CSV",
                     data=csv_data,
@@ -459,14 +451,12 @@ elif st.session_state.mode == "admin":
                     )
 
                 st.markdown("### Summary")
-
                 col1, col2 = st.columns(2)
 
                 with col1:
                     st.markdown("### Average Ratings")
 
                     avg_ratings = {}
-
                     for label, column in SUMMARY_LABELS.items():
                         if column in df.columns:
                             avg_ratings[label] = pd.to_numeric(df[column], errors="coerce").mean()
@@ -476,16 +466,13 @@ elif st.session_state.mode == "admin":
                         orient="index",
                         columns=["Average Rating"],
                     )
-
                     avg_df["Average Rating"] = avg_df["Average Rating"].map(
                         lambda x: f"{x:.2f}" if pd.notna(x) else "N/A"
                     )
-
                     st.table(avg_df)
 
                 with col2:
                     st.markdown("### Final Overall Rating Distribution")
-
                     if "overall" in df.columns:
                         overall_series = pd.to_numeric(df["overall"], errors="coerce")
                         agg = overall_series.groupby(overall_series).size().reindex(range(1, 6), fill_value=0)
